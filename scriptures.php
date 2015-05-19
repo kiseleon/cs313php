@@ -1,12 +1,24 @@
 <?php
-$servername = "localhost";
-$username = "php";
-$password = "password";
+
+$openShiftVar = getenv('OPENSHIFT_MYSQL_DB_HOST');
+
+// set environment specific variables
+if ($openShiftVar === null || $openShiftVar == "") {
+	// Not in openshift
+	$dbHost = "localhost";
+	$dbUser = "php";
+	$dbpassword = "password"
+} else {
+	$dbHost = getenv('OPENSHIFT_MYSQL_DB_HOST');
+	$dbUser = getenv('OPENSHIFT_MYSQL_DB_USERNAME');
+	$dbPassword = getenv('OPENSHIFT_MYSQL_DB_PASSWORD');
+}
+
 $myDB = 'scriptures';
 $status = false;
 
 try {
-    $conn = new PDO("mysql:host=$servername;dbname=$myDB", $username, $password);
+    $conn = new PDO("mysql:host=$dbHost;dbname=$myDB", $dbUser, $dbPassword);
     // set the PDO error mode to exception
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $status = true;
