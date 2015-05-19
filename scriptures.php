@@ -1,9 +1,9 @@
 <?php
 
 $openShiftVar = getenv('OPENSHIFT_MYSQL_DB_HOST');
-$dbHost;
-$dbUser;
-$dbPassword;
+$dbHost = "";
+$dbUser = "";
+$dbPassword = "";
 
 
 // set environment specific variables
