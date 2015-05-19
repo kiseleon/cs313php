@@ -7,7 +7,7 @@ if ($openShiftVar === null || $openShiftVar == "") {
 	// Not in openshift
 	$dbHost = "localhost";
 	$dbUser = "php";
-	$dbpassword = "password"
+	$dbPassword = "password"
 } else {
 	$dbHost = getenv('OPENSHIFT_MYSQL_DB_HOST');
 	$dbUser = getenv('OPENSHIFT_MYSQL_DB_USERNAME');
