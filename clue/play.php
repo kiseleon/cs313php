@@ -1,6 +1,6 @@
 <?php 
 
-require dirname( __FILE__ ) . './include/clueDbHeader.php'; 
+require './include/clueDbHeader.php'; 
 session_start();
 
 // make sure you're signed in, otherwise get booted.
@@ -35,7 +35,7 @@ if ($validated === false) {
 
 <head>
 <?php
-require dirname( __FILE__ ) . './include/bootstrapHeader.php';
+require './include/bootstrapHeader.php';
 ?>
 <title>Clue - Play</title>
 </head>
@@ -178,7 +178,7 @@ if ($weaponStatement->rowCount() > 0) {
 
 
 <?php
-require dirname( __FILE__ ) . './include/bootstrapFooter.php';
+require './include/bootstrapFooter.php';
 ?>
 </body>
 
