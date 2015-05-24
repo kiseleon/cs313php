@@ -1,6 +1,6 @@
 <?php 
 
-require dirname( __FILE__ ) . './include/clueDbHeader.php'; 
+require './include/clueDbHeader.php'; 
 session_start();
 
 ?>
@@ -11,7 +11,7 @@ session_start();
 
 <head>
 <?php
-require dirname( __FILE__ ) . './include/bootstrapHeader.php';
+require './include/bootstrapHeader.php';
 ?>
 
 <script>
@@ -78,7 +78,7 @@ if ($status === true) {
 
 </div>
 <?php
-require dirname( __FILE__ ) . './include/bootstrapFooter.php';
+require './include/bootstrapFooter.php';
 ?>
 
 </body>
