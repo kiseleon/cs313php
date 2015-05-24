@@ -1,6 +1,7 @@
 <?php 
 
-require dirname( __FILE__ ) . './include/clueDbHeader.php'; 
+
+require getenv('OPENSHIFT_HOMEDIR') . './include/clueDbHeader.php'; 
 session_start();
 
 // check if they are already logged in and the database connection is working
@@ -59,7 +60,7 @@ if (isset($_POST["username"]) && isset($_POST["pin"]) && $status === true) {
 
 <head>
 <?php
-require dirname( __FILE__ ) . './include/bootstrapHeader.php';
+require getenv('OPENSHIFT_HOMEDIR') . './include/bootstrapHeader.php';
 ?>
 <link href="/css/signin.css" rel="stylesheet" />
 <title>Clue - Login</title>
@@ -90,7 +91,7 @@ if (isset($loginfailed)) {
 </form>
 </div>
 <?php
-require dirname( __FILE__ ) . './include/bootstrapFooter.php';
+require getenv('OPENSHIFT_HOMEDIR') . './include/bootstrapFooter.php';
 ?>
 
 </body>
