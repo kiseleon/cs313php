@@ -1,6 +1,6 @@
 <?php 
 
-require dirname( __FILE__ ) . './include/clueDbHeader.php'; 
+require './include/clueDbHeader.php'; 
 session_start();
 
 $createfailed = NULL;
@@ -51,7 +51,7 @@ if (isset($_POST["userid"]) && $status === true) {
 
 <head>
 <?php
-require dirname( __FILE__ ) . './include/bootstrapHeader.php';
+require './include/bootstrapHeader.php';
 ?>
 <link href="/css/signin.css" rel="stylesheet" />
 <title>Clue - Create Player</title>
@@ -104,7 +104,7 @@ echo '</div>';
 </form>
 </div>
 <?php
-require dirname( __FILE__ ) . './include/bootstrapFooter.php';
+require './include/bootstrapFooter.php';
 ?>
 
 </body>
