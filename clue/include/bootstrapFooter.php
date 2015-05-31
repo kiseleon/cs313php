@@ -5,4 +5,4 @@
 <!--<script src="js/bootstrap.min.js"></script> -->
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="js/ie10-viewport-bug-workaround.js"></script>
+<!--<script src="/js/ie10-viewport-bug-workaround.js"></script> i don't have this, so don't link to it-->

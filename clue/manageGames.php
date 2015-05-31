@@ -19,10 +19,8 @@ function removeGame(game_number) {
 	// confirm dialog
 	if (confirm("Remove game number " + game_number + "?\nThis cannot be undone.") == true) {
 
-		// actually do the delete here
-
-		// reload the page so the php script runs again
-		window.location = "/clue/manageGames.php";
+		// redirect to the deletion page, which will redirect back to here when it is done
+		window.location = "/clue/removeGame.php?gamenumber=" + game_number;
 	}
 }
 
@@ -50,15 +48,26 @@ if ($status === true) {
 		//echo $row['game_number'] . '<br />';
 
 		echo '<div class="list-group">';
-		echo '<div class="list-group-item list-group-item-success">Game number ' . $row['game_number'] . ': </div>';
+		echo '<div class="list-group-item active">Game number ' . $row['game_number'] . ': </div>';
 
-		$playerQuery = 'SELECT username FROM players p JOIN games g ON p.id=g.player_id WHERE g.game_number=' .
-			$row['game_number'] . ' AND p.id=g.player_id;';
+		$playerQuery = 'SELECT username, name, color FROM players p ' .
+			'JOIN games g ON p.id=g.player_id ' .
+			'JOIN suspect s ON g.player_character=s.id ' .
+			'WHERE g.game_number=' . $row['game_number'] . ' ' .
+			'AND p.id=g.player_id ' . 
+			'ORDER BY username';
 		$playerStatement = $db->prepare($playerQuery);
 		$playerStatement->execute();
 
 		foreach ($playerStatement->fetchAll() as $playerRow) {
-			echo '<li class="list-group-item">' . $playerRow['username'] . "</li>\n";
+			$isWhite = "";
+			if ($playerRow["color"] == "F8F8FF") {
+				$isWhite = "text-shadow: 0 0 6px #000000, 0 0 1px #000000, 0 0 3px #000000;";
+			}
+
+
+			echo '<li class="list-group-item">' . $playerRow['username'] . 
+			 '<p style="' . $isWhite . 'font-weight: bold; color:#' . $playerRow["color"] . '" >' . $playerRow["name"] . '</p>' . "</li>\n";
 		}
 		echo '<button class="btn btn-block list-group-item-danger list-group-item" onClick="removeGame(' . $row['game_number'] . ')" >Remove Game #' . $row['game_number'] . '</button>' . "\n";
 		echo "</div>\n";
@@ -75,7 +84,8 @@ if ($status === true) {
 
 
 ?>
-
+<a href="/clue/clue.php" class="btn btn-lg btn-success">Back</a>
+<a href="/clue/clue.php" class="btn btn-lg btn-warning">Home</a>
 </div>
 <?php
 require './include/bootstrapFooter.php';

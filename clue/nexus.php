@@ -39,7 +39,7 @@ function viewBoard(game_number) {
 
 <body>
 <div class="container">
-<h1>Nexus</h1>
+<h1>Nexus <a href="/clue/newGame.php" class="btn btn-lg btn-success">Create Game</a></h1>
 <?php
 // Choose a game
 if ($status === true) {
@@ -57,13 +57,23 @@ if ($status === true) {
 		echo '<div class="list-group">';
 		echo '<li class="list-group-item active">Game #' . $row['game_number'] . ':</li>';
 
-		$playerQuery = 'SELECT username FROM players p JOIN games g ON p.id=g.player_id WHERE g.game_number=' .
-			$row['game_number'] . ' AND p.id=g.player_id;';
+		$playerQuery = "SELECT p.username, s.name AS player_character, s.color FROM players p " .
+			"JOIN games g ON p.id=g.player_id " .
+			"JOIN suspect s ON g.player_character=s.id " .
+			'WHERE g.game_number="' . $row['game_number'] . '" ' .
+			"AND p.id=g.player_id;";
 		$playerStatement = $db->prepare($playerQuery);
 		$playerStatement->execute();
 
 		foreach ($playerStatement->fetchAll() as $playerRow) {
-			echo '<li class="list-group-item">' . $playerRow['username'] . "</li>\n";
+			$isWhite = "";
+			if ($playerRow["color"] == "F8F8FF") {
+				$isWhite = "text-shadow: 0 0 6px #000000, 0 0 1px #000000, 0 0 3px #000000;";
+			}
+
+
+			echo '<li class="list-group-item">' . $playerRow['username'] . 
+			 '<p style="' . $isWhite . 'font-weight: bold; color:#' . $playerRow["color"] . '" >' . $playerRow["player_character"] . '</p>' . "</li>\n";
 		}
 
 		echo '<button class="list-group-item btn-block list-group-item-success" onClick="playGame(' . $row['game_number'] . ')" >Play Game #' . $row['game_number'] . '</button>' . "\n";
@@ -83,8 +93,9 @@ if ($status === true) {
 
 ?>
 <a href="/clue/clearSession.php" class="btn btn-lg btn-primary">Log out</a>
+<a href="/clue/clue.php" class="btn btn-lg btn-success">Back</a>
+<a href="/clue/clue.php" class="btn btn-lg btn-warning">Home</a>
 </div>
-
 <?php
 require './include/bootstrapFooter.php';
 ?>

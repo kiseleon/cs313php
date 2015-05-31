@@ -38,14 +38,16 @@ if ($validated === false) {
 require './include/bootstrapHeader.php';
 ?>
 <title>Clue - Play</title>
+<link href="/css/clue-play.css" type="text/css" rel="stylesheet" />
 </head>
 
 <body>
 
 <div class="container">
+	<div class="container" maxwidth="160px"> <!-- For the modal stuff -->
 <?php
 // Generate the list of cards: First Rooms, then Suspects, then Weapons
-$roomQuery = "SELECT r.id, r.name FROM room r " . 
+$roomQuery = "SELECT r.id, r.name, r.picture FROM room r " . 
 			"JOIN player_rooms pr ON r.id=pr.room_id " .
 			"JOIN games g ON g.id=pr.game_id " .
 			"JOIN players p ON p.id=g.player_id " .
@@ -57,15 +59,13 @@ $roomStatement->bindValue(':game_number', $_GET['game_number']);
 $roomStatement->execute();
 
 if ($roomStatement->rowCount() > 0) {
-	echo '<div class="list-group">';
-	echo '<li class="list-group-item active">Rooms:</li>';
+	echo '<ul class="row">';
 	foreach ($roomStatement->fetchAll() as $roomRow) {
-		echo '<li class="list-group-item">' . $roomRow["name"] . '</li>';
+		echo '<li class="col-lg-2 col-md-2 col-sm-3 col-xs-4 img-responsive"><img src="' . $roomRow["picture"] . '" /></li>';
 	}
-	echo '</div>';
 }
 
-$suspectQuery = "SELECT s.id, s.name FROM suspect s " . 
+$suspectQuery = "SELECT s.id, s.name, s.picture FROM suspect s " . 
 			"JOIN player_suspects ps ON s.id=ps.suspect_id " .
 			"JOIN games g ON g.id=ps.game_id " .
 			"JOIN players p ON p.id=g.player_id " .
@@ -77,15 +77,12 @@ $suspectStatement->bindValue(':game_number', $_GET['game_number']);
 $suspectStatement->execute();
 
 if ($suspectStatement->rowCount() > 0) {
-	echo '<div class="list-group">';
-	echo '<li class="list-group-item active">Rooms:</li>';
 	foreach ($suspectStatement->fetchAll() as $suspectRow) {
-		echo '<li class="list-group-item">' . $suspectRow["name"] . '</li>';
+		echo '<li class="col-lg-2 col-md-2 col-sm-3 col-xs-4 img-responsive"><img src="' . $suspectRow["picture"] . '" /></li>';
 	}
-	echo '</div>';
 }
 
-$weaponQuery = "SELECT w.id, w.name FROM weapon w " . 
+$weaponQuery = "SELECT w.id, w.name, w.picture FROM weapon w " . 
 			"JOIN player_weapons pw ON w.id=pw.weapon_id " .
 			"JOIN games g ON g.id=pw.game_id " .
 			"JOIN players p ON p.id=g.player_id " .
@@ -97,18 +94,42 @@ $weaponStatement->bindValue(':game_number', $_GET['game_number']);
 $weaponStatement->execute();
 
 if ($weaponStatement->rowCount() > 0) {
-	echo '<div class="list-group">';
-	echo '<li class="list-group-item active">Rooms:</li>';
 	foreach ($weaponStatement->fetchAll() as $weaponRow) {
-		echo '<li class="list-group-item">' . $weaponRow["name"] . '</li>';
+		echo '<li class="col-lg-2 col-md-2 col-sm-3 col-xs-4 img-responsive"><img src="' . $weaponRow["picture"] . '" /></li>';
 	}
-	echo '</div>';
+}
+echo '</ul></div>';
+?>
+
+
+
+
+<?php
+
+echo '<form name="cluesheet" action="updateCluesheet.php?game_number=' . $_GET['game_number'] .'" method="POST">';
+
+// get the current game id for the form
+$query = "SELECT g.id FROM games g JOIN players p ON g.player_id=p.id WHERE p.id=:userid AND g.game_number=:game_number";
+$statement = $db->prepare($query);
+$statement->bindValue(':userid', $_SESSION['userid']);
+$statement->bindValue(':game_number', $_GET['game_number']);
+$statement->execute();
+
+$game_id = "";
+
+foreach ($statement->fetchAll() as $row) {
+	$game_id = $row["id"];
 }
 
-///////////////////////////////////////////////////////////////////////
-
+echo '<input type="hidden" name="game_id" value="' . $game_id . '" />';
 
 // Get the current guessing information from the database
+$statusList = array();
+$statusList[] = "yes";
+$statusList[] = "maybe";
+$statusList[] = "no";
+$statusList[] = "";
+
 
 // Generate the list of tracked cards: First Rooms, then Suspects, then Weapons
 $roomQuery = "SELECT r.id, r.name, tr.status FROM room r " . 
@@ -124,11 +145,23 @@ $roomStatement->execute();
 
 if ($roomStatement->rowCount() > 0) {
 	echo '<div class="list-group">';
-	echo '<li class="list-group-item list-group-item-warning">Rooms:</li>';
+	echo '<li class="list-group-item active">Rooms:</li>';
 	foreach ($roomStatement->fetchAll() as $roomRow) {
-		echo '<li class="list-group-item">' . $roomRow["name"] . ': ' . $roomRow['status'] . '</li>';
+		echo '<li class="list-group-item">' . $roomRow["name"] . ': ';
+		foreach ($statusList as $checkedStatus) {
+			$check = "";
+			if ($checkedStatus === $roomRow["status"]) {
+				$check = "checked ";
+			}
+			if ($checkedStatus === '') {
+				$check = $check . 'style="display:none" ';
+			}
+			echo '<input type="radio" name="' . str_replace(' ', '_', $roomRow["name"]) . '" value="' . $checkedStatus . '" ' .
+				$check . " />  " . $checkedStatus . " \n";
+		}
+		echo "</li>\n";
 	}
-	echo '</div>';
+	echo '</div>' . "\n";
 }
 
 $suspectQuery = "SELECT s.id, s.name, ts.status FROM suspect s " . 
@@ -144,9 +177,21 @@ $suspectStatement->execute();
 
 if ($suspectStatement->rowCount() > 0) {
 	echo '<div class="list-group">';
-	echo '<li class="list-group-item list-group-item-warning">Rooms:</li>';
+	echo '<li class="list-group-item active">Suspects:</li>';
 	foreach ($suspectStatement->fetchAll() as $suspectRow) {
-		echo '<li class="list-group-item">' . $suspectRow["name"] . ': ' . $suspectRow['status'] . '</li>';
+		echo '<li class="list-group-item">' . $suspectRow["name"] . ': ';
+		foreach ($statusList as $checkedStatus) {
+			$check = "";
+			if ($checkedStatus === $suspectRow["status"]) {
+				$check = "checked ";
+			}
+			if ($checkedStatus === '') {
+				$check = $check . 'style="display:none" ';
+			}
+			echo '<input type="radio" name="' . str_replace(' ', '_', $suspectRow["name"]) . '" value="' . $checkedStatus . '" ' .
+				$check . " />  " . $checkedStatus . " \n";
+		}
+		echo "</li>\n";
 	}
 	echo '</div>';
 }
@@ -164,22 +209,65 @@ $weaponStatement->execute();
 
 if ($weaponStatement->rowCount() > 0) {
 	echo '<div class="list-group">';
-	echo '<li class="list-group-item list-group-item-warning">Rooms:</li>';
+	echo '<li class="list-group-item active">Weapons:</li>';
 	foreach ($weaponStatement->fetchAll() as $weaponRow) {
-		echo '<li class="list-group-item">' . $weaponRow["name"] . ': ' . $weaponRow['status'] . '</li>';
+		echo '<li class="list-group-item">' . $weaponRow["name"] . ': ';
+		foreach ($statusList as $checkedStatus) {
+			$check = "";
+			if ($checkedStatus === $weaponRow["status"]) {
+				$check = "checked ";
+			}
+			if ($checkedStatus === '') {
+				$check = $check . 'style="display:none" ';
+			}
+			echo '<input type="radio" name="' . str_replace(' ', '_', $weaponRow["name"]) . '" value="' . $checkedStatus . '" ' .
+				$check . " />  " . $checkedStatus . " \n";
+		}
+		echo "</li>\n";
 	}
 	echo '</div>';
 }
 
 
 ?>
-
+<input class="btn btn-lg btn-primary" type="submit" value="Save Changes" />
+<?php
+echo '<a href="/clue/accuse.php?game_number=' . $_GET["game_number"] . '" class="btn btn-lg btn-danger">Make Accusation</a>';
+?>
+</form>
+<br />
+<a href="/clue/clue.php" class="btn btn-lg btn-success">Back</a>
+<a href="/clue/clue.php" class="btn btn-lg btn-warning">Home</a>
 </div>
 
+<!-- This is the code for the fading stuff -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">         
+        	<div class="modal-body">                
+          	</div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <?php
 require './include/bootstrapFooter.php';
 ?>
+<script>
+$(document).ready(function(){
+    $('li img').on('click',function(){
+        var src = $(this).attr('src');
+        var img = '<img src="' + src + '" class="img-responsive"/>';
+        $('#myModal').modal();
+        $('#myModal').on('shown.bs.modal', function(){
+        	$('#myModal .modal-body').html(img);
+        });
+        $('#myModal').on('hidden.bs.modal', function(){
+            $('#myModal .modal-body').html('');
+        });
+    });  
+})
+</script>
 </body>
 
 </html>

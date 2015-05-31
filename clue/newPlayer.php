@@ -29,7 +29,11 @@ if (isset($_POST["username"]) && isset($_POST["pin"]) && $status === true) {
 	// if it fails, you're still here. Set this to true to clear the flag for the error message
 	if ($createfailed == false) {
 		//add the user here!
-		//header ( 'Location:/clue/managePlayers.php');
+		$addQuery = "INSERT INTO players (username, pin) VALUES (:username, :pin)";
+		$addStatement = $db->prepare($addQuery);
+		$addStatement->bindValue(':username', $_POST['username']);
+		$addStatement->bindValue(':pin', $_POST['pin']);
+		$addStatement->execute();
 	}
 }
 
@@ -74,11 +78,13 @@ if ($createfailed == false) {
 	<label for="username" class="sr-only">Username:</label>
 	<input type="input" class="form-control" size="40" maxlength="40" name="username" placeholder="Username" required autofocus />
 	<label for="pin" class="sr-only">PIN#:</label>
-	<input type="password" class="form-control" size="4" maxlength="4" name="pin" placeholder="PIN #" required /> 
+	<input type="password" pattern="^\d{4}$" class="form-control" size="4" maxlength="4" name="pin" placeholder="PIN #" required /> 
 	<p><input class="btn btn-lg btn-default btn-block" type="submit" value="Create User" /></p>
-
+	<a href="/clue/managePlayers.php" class="btn btn-lg btn-success">Back</a>
+	<a href="/clue/clue.php" class="btn btn-lg btn-warning">Home</a>
 
 </form>
+
 </div>
 <?php
 require './include/bootstrapFooter.php';
