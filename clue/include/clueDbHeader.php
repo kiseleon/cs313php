@@ -16,6 +16,7 @@ if ($openShiftVar === null || $openShiftVar == "") {
 }
 $myDB = 'clue';
 $status = false;
+$db = null;
 try {
     $db = new PDO("mysql:host=$dbHost;dbname=$myDB", $dbUser, $dbPassword);
     // set the PDO error mode to exception
@@ -24,6 +25,6 @@ try {
     }
 catch(PDOException $e)
     {
-    //echo "Connection failed: " . $e->getMessage();
+    echo "Connection failed: " . $e->getMessage();
     }
 ?>

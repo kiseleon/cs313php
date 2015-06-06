@@ -130,6 +130,7 @@ $statusList[] = "maybe";
 $statusList[] = "no";
 $statusList[] = "";
 
+echo '<table class="table">' . "\n";
 
 // Generate the list of tracked cards: First Rooms, then Suspects, then Weapons
 $roomQuery = "SELECT r.id, r.name, tr.status FROM room r " . 
@@ -142,12 +143,17 @@ $roomStatement = $db->prepare($roomQuery);
 $roomStatement->bindValue(':userid', $_SESSION['userid']);
 $roomStatement->bindValue(':game_number', $_GET['game_number']);
 $roomStatement->execute();
-
+ 
 if ($roomStatement->rowCount() > 0) {
-	echo '<div class="list-group">';
-	echo '<li class="list-group-item active">Rooms:</li>';
+	echo '<tr class="active">' . "\n";
+	echo '<th>Rooms:</th>' . "\n";
+	echo "<th>Yes</th>\n";
+	echo "<th>Maybe</th>\n";
+	echo "<th>No</th>\n";
+	echo "</tr>\n";
 	foreach ($roomStatement->fetchAll() as $roomRow) {
-		echo '<li class="list-group-item">' . $roomRow["name"] . ': ';
+		echo '<tr>' . "\n";
+		echo '<td>' . $roomRow["name"] . ': </td>';
 		foreach ($statusList as $checkedStatus) {
 			$check = "";
 			if ($checkedStatus === $roomRow["status"]) {
@@ -156,12 +162,12 @@ if ($roomStatement->rowCount() > 0) {
 			if ($checkedStatus === '') {
 				$check = $check . 'style="display:none" ';
 			}
-			echo '<input type="radio" name="' . str_replace(' ', '_', $roomRow["name"]) . '" value="' . $checkedStatus . '" ' .
-				$check . " />  " . $checkedStatus . " \n";
+			echo '<td><input type="radio" name="' . str_replace(' ', '_', $roomRow["name"]) . '" value="' . $checkedStatus . '" ' .
+				$check . " /> </td> \n";
 		}
-		echo "</li>\n";
+		echo "</tr>\n";
 	}
-	echo '</div>' . "\n";
+	
 }
 
 $suspectQuery = "SELECT s.id, s.name, ts.status FROM suspect s " . 
@@ -176,10 +182,16 @@ $suspectStatement->bindValue(':game_number', $_GET['game_number']);
 $suspectStatement->execute();
 
 if ($suspectStatement->rowCount() > 0) {
-	echo '<div class="list-group">';
-	echo '<li class="list-group-item active">Suspects:</li>';
+	echo '<tr class="active">' . "\n";
+	echo '<th>Suspects:</th>' . "\n";
+	echo "<th>Yes</th>\n";
+	echo "<th>Maybe</th>\n";
+	echo "<th>No</th>\n";
+	echo "</tr>\n";
+
 	foreach ($suspectStatement->fetchAll() as $suspectRow) {
-		echo '<li class="list-group-item">' . $suspectRow["name"] . ': ';
+		echo "<tr>\n";
+		echo '<td>' . $suspectRow["name"] . ':</td>';
 		foreach ($statusList as $checkedStatus) {
 			$check = "";
 			if ($checkedStatus === $suspectRow["status"]) {
@@ -188,12 +200,12 @@ if ($suspectStatement->rowCount() > 0) {
 			if ($checkedStatus === '') {
 				$check = $check . 'style="display:none" ';
 			}
-			echo '<input type="radio" name="' . str_replace(' ', '_', $suspectRow["name"]) . '" value="' . $checkedStatus . '" ' .
-				$check . " />  " . $checkedStatus . " \n";
+			echo '<td><input type="radio" name="' . str_replace(' ', '_', $suspectRow["name"]) . '" value="' . $checkedStatus . '" ' .
+				$check . " /></td>\n";
 		}
-		echo "</li>\n";
+		echo "</tr>\n";
 	}
-	echo '</div>';
+	
 }
 
 $weaponQuery = "SELECT w.id, w.name, tw.status FROM weapon w " . 
@@ -208,10 +220,15 @@ $weaponStatement->bindValue(':game_number', $_GET['game_number']);
 $weaponStatement->execute();
 
 if ($weaponStatement->rowCount() > 0) {
-	echo '<div class="list-group">';
-	echo '<li class="list-group-item active">Weapons:</li>';
+	echo '<tr class="active">' . "\n";
+	echo '<th>Weapons:</th>' . "\n";
+	echo "<th>Yes</th>\n";
+	echo "<th>Maybe</th>\n";
+	echo "<th>No</th>\n";
+	echo "</tr>\n";
 	foreach ($weaponStatement->fetchAll() as $weaponRow) {
-		echo '<li class="list-group-item">' . $weaponRow["name"] . ': ';
+		echo "<tr>\n";
+		echo '<td>' . $weaponRow["name"] . ':</td>';
 		foreach ($statusList as $checkedStatus) {
 			$check = "";
 			if ($checkedStatus === $weaponRow["status"]) {
@@ -220,14 +237,14 @@ if ($weaponStatement->rowCount() > 0) {
 			if ($checkedStatus === '') {
 				$check = $check . 'style="display:none" ';
 			}
-			echo '<input type="radio" name="' . str_replace(' ', '_', $weaponRow["name"]) . '" value="' . $checkedStatus . '" ' .
-				$check . " />  " . $checkedStatus . " \n";
+			echo '<td><input type="radio" name="' . str_replace(' ', '_', $weaponRow["name"]) . '" value="' . $checkedStatus . '" ' .
+				$check . " /> </td>  \n";
 		}
-		echo "</li>\n";
+		echo "</tr>\n";
 	}
-	echo '</div>';
+	
 }
-
+echo "</table>\n";
 
 ?>
 <input class="btn btn-lg btn-primary" type="submit" value="Save Changes" />

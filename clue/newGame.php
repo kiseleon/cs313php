@@ -14,7 +14,7 @@ session_start();
 require './include/bootstrapHeader.php';
 ?>
 <link href="/css/signin.css" rel="stylesheet" />
-<title>Clue - Create Player</title>
+<title>Clue - Create Game</title>
 
 <script>
 function toggle(player_id) {
@@ -39,6 +39,15 @@ function toggle(player_id) {
 <form name="login" method="POST" action="createGame.php" class="form-signin">
 <h2 class="form-signin-heading">Please select players</h2>
 <?php
+
+
+// Check if there was an failed attempt
+if (isset($_GET['valid'])) {
+	echo '<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>There can be only one of each character in a game.</div>' . "\n";
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 

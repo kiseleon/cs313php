@@ -8,6 +8,32 @@ if (!isset($_SESSION["userid"]) || !isset($_GET["game_number"])) {
 	header ( 'Location:/clue/nexus.php');
 }
 
+$correct = null;
+// If you've made an accusation, then there will be post data
+// check for all three pieces of data...
+if (isset($_POST["room"]) && isset($_POST["suspect"]) && isset($_POST["weapon"])) {
+	// check to see if your answer was correct
+	$query = "SELECT id FROM body_cards " .
+		"WHERE game_number=:gamenumber " .
+		"AND room_id=:room " .
+		"AND suspect_id=:suspect " .
+		"AND weapon_id=:weapon";
+	$statement = $db->prepare($query);
+	$statement->bindValue(':gamenumber', $_GET['game_number']);
+	$statement->bindValue(':room', $_POST['room']);
+	$statement->bindValue(':suspect', $_POST["suspect"]);
+	$statement->bindValue(':weapon', $_POST['weapon']);
+	$statement->execute();
+	$correct = false;
+	if ($statement->rowCount() > 0 ) {
+		// SUCCESS
+		$correct = true;
+	}
+}
+
+
+
+
 // get the lists of rooms, suspects, and weapons
 
 // get the list of names/ids for rooms
@@ -61,9 +87,24 @@ require './include/bootstrapHeader.php';
 <body>
 <div class="container">
 <h1>Make an Accusation</h1>
+
+<?php
+
+// Check if there was an accusation attempt and display the results
+if ($correct === false) {
+	echo '<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>You have guessed incorrectly. Better luck next time.</div>' . "\n";
+} else  if ($correct === true) {
+	echo '<div class="alert alert-success alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Congratulations!</strong> You got it!</div>' . "\n";
+}
+
+?>
+
 <div class="table-responsive">
 <?php
-echo '<form name="accuse" method="POST" action="/clue/makeAccusation.php?game_number=' . $_GET["game_number"] . '">';
+echo '<form name="accuse" method="POST" action="/clue/accuse.php?game_number=' . $_GET["game_number"] . '">';
 ?>
 <table class="table">
 <thead>

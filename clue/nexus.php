@@ -76,8 +76,8 @@ if ($status === true) {
 			 '<p style="' . $isWhite . 'font-weight: bold; color:#' . $playerRow["color"] . '" >' . $playerRow["player_character"] . '</p>' . "</li>\n";
 		}
 
-		echo '<button class="list-group-item btn-block list-group-item-success" onClick="playGame(' . $row['game_number'] . ')" >Play Game #' . $row['game_number'] . '</button>' . "\n";
-		echo '<button class="list-group-item btn-block list-group-item-info" onClick="viewBoard(' . $row['game_number'] . ')" >View Board for Game #' . $row['game_number'] . '</button>' . "\n";
+		echo '<button class="list-group-item btn btn-block list-group-item-success" onClick="playGame(' . $row['game_number'] . ')" >Play Game #' . $row['game_number'] . '</button>' . "\n";
+		echo '<button class="list-group-item list-group-item-info btn btn-block" onClick="viewBoard(' . $row['game_number'] . ')" >View Board for Game #' . $row['game_number'] . '</button>' . "\n";
 		echo '</div>';
 	}
 

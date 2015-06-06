@@ -19,6 +19,27 @@ $players = $_POST["userid"];
 // get the list of characters
 $characters = $_POST["character"];
 
+// VALIDATION
+// Make sure there is only one of each character
+$charlist = array();
+$valid = true;
+
+foreach ($characters as $character) {
+	foreach ($charlist as $charfromlist) {
+		if ($charfromlist == $character) { // it found a duplicate, so boot them out before creating anything in the DB
+			$valid = false;
+		} 
+	}
+	$charlist[] = $character; // add it to the list for future compares
+}
+
+
+
+
+
+
+if ($valid == true) {
+
 // find the highest game_number and add 1
 $maxQuery = "SELECT MAX(game_number) AS game_number FROM games;";
 $maxStatement = $db->prepare($maxQuery);
@@ -181,7 +202,7 @@ $index = 1;
 // add each player's cards to the database
 foreach ($playerCards as $key => $player) {
 	// get the game_id for the player and game_number
-	$playerQuery = "SELECT id FROM games " .
+	$playerQuery = "SELECT id, player_character FROM games " .
 		"WHERE game_number=" . $gameNumber . " " .
 		"AND player_id=" . $players[$key];
 
@@ -189,9 +210,11 @@ foreach ($playerCards as $key => $player) {
 	$playerStatement->execute();
 
 	$game_id = 0;
+	$character = 0;
 
 	foreach ($playerStatement->fetchAll() as $row) {
 		$game_id = $row['id'];
+		$character = $row['player_character'];
 	}
 
 
@@ -212,8 +235,24 @@ foreach ($playerCards as $key => $player) {
 	}
 
 	// while you're here and have the game id, add the board info
-	// For now, it will start everyone at (1,1)
-	$boardQuery = "INSERT INTO location (game_id, x_pos, y_pos) VALUES (" . $game_id . ", 1, 1);";
+	// It starts everyone at the proper location for their character
+
+	// get the player coordinates using the player_character
+	$locationQuery = "SELECT startx, starty FROM suspect WHERE id=:player_character";
+	$locationStatement = $db->prepare($locationQuery);
+	$locationStatement->bindValue(':player_character', $character);
+	$locationStatement->execute();
+
+	$startx = 0;
+	$starty = 0;
+
+	foreach ($locationStatement->fetchAll() as $row) {
+		$startx = $row['startx'];
+		$starty = $row['starty'];
+	}
+
+
+	$boardQuery = "INSERT INTO location (game_id, x_pos, y_pos) VALUES (" . $game_id . ", " . $startx . ", " . $starty . ");";
 	$boardStatement = $db->prepare($boardQuery);
 	$boardStatement->execute();
 
@@ -252,9 +291,12 @@ foreach ($playerCards as $key => $player) {
 
 header ( 'Location: /clue/manageGames.php');
 
-
+} else { // two players of the same type = invalid, therefore boot them back
+	header ( 'Location: /clue/newGame.php?valid=false');
+}
 
 
 // NOTE: All HTML parts are to be deleted once the script works. It is just for debugging.
+
 ?>
 
