@@ -61,7 +61,7 @@ foreach($roomList as $key => $room) {
 
 // SUSPECTS
 foreach($suspectList as $key => $suspect) {
-	$converted = str_replace(' ', "_", $room);
+	$converted = str_replace(' ', "_", $suspect);
 	if (isset($_POST[$converted])) {
 		$query = "UPDATE track_suspects SET status=:status WHERE game_id=:gameid AND suspect_id=:suspectid";
 		$statement = $db->prepare($query);
