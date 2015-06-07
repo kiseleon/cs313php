@@ -204,7 +204,6 @@ function getXPosition(gridX) {
 function getYPosition(gridY) {
 	return gridY * gridsize + yoff;
 }
-
 </script>
 
 <style>
@@ -271,16 +270,29 @@ foreach ($players as $player) {
 
 ?>
 <div id="selector" class="selector" style="visibility:hidden; top: 0px; left: 0px;"></div>
-
-
-
 </div>
+
+
+<button class="btn btn-lg btn-primary" id="rollDiceBtn">Roll Dice!</button>
+<div id="dice"></div>
+<br /><br />
 <a href="/clue/nexus.php" class="btn btn-lg btn-success">Back</a>
 <a href="/clue/clue.php" class="btn btn-lg btn-warning">Home</a>
 
 <?php
 require './include/bootstrapFooter.php';
 ?>
+
+<!-- This script uses JQuery, so it has to come after the footer where JQuery is linked -->
+<script>
+$(document).ready(function(){
+    $("#rollDiceBtn").click(function(){
+        $.ajax({url: "./diceRoll.php", success: function(result){
+            $("#dice").html(result);
+        }});
+    });
+});
+</script>
 </body>
 
 </html>

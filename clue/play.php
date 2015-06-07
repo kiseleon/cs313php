@@ -253,7 +253,7 @@ echo '<a href="/clue/accuse.php?game_number=' . $_GET["game_number"] . '" class=
 ?>
 </form>
 <br />
-<a href="/clue/clue.php" class="btn btn-lg btn-success">Back</a>
+<a href="/clue/nexus.php" class="btn btn-lg btn-success">Back</a>
 <a href="/clue/clue.php" class="btn btn-lg btn-warning">Home</a>
 </div>
 
